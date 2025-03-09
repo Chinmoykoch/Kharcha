@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
 class Api {
@@ -64,13 +65,42 @@ class Api {
       debugPrint('Response Body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return jsonDecode(response.body);
+        print(response.body);
+        final responseData = jsonDecode(response.body);
+        GetStorage().write('userId', responseData['user']['id'].toString());
+
+        return responseData;
       } else {
         throw Exception("HTTP ${response.statusCode}: ${response.body}");
       }
     } catch (e) {
       debugPrint('Login Error: $e');
       return {"error": "Error during login: $e"};
+    }
+  }
+
+  Future<Map<String, dynamic>?> fetchBalance() async {
+    String? myValue = GetStorage().read('userId');
+    print(myValue);
+
+    try {
+      final bodyData = {"userId": myValue};
+      final response = await http.post(
+        Uri.parse("$_baseUrl/api/v1/auth/singleuser"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(bodyData),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data;
+      } else {
+        print("Failed to load balance: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching balance: $e");
+      return null;
     }
   }
 

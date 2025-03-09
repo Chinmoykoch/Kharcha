@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kharcha/api.dart';
 import 'package:kharcha/screens/home/widgets/all_recent_transaction.dart';
 import 'package:kharcha/screens/home/widgets/all_upcoming_transaction.dart';
+import 'package:kharcha/screens/home/widgets/transactioncards.dart';
+import 'package:kharcha/screens/home/widgets/upcomingtransaction.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class HomepageScreen extends StatefulWidget {
@@ -13,20 +16,29 @@ class HomepageScreen extends StatefulWidget {
 
 class _HomepageScreenState extends State<HomepageScreen> {
   String selectedOption = "Month";
+  String username = "User";
+  double balance = 0;
+  int amount = 0;
+  String date = "10/3/2025";
+  String marchantName = "user";
+  String status = 'completed';
+  String category = '';
+  List<dynamic> transactionsList = [];
+  List<dynamic> utransactionsList = [];
 
   final Map<String, double> monthlyData = {
-    "Food": 30,
-    "Transport": 25,
-    "Shopping": 20,
-    "Entertainment": 15,
+    "Grocery": 30,
+    "Leisure": 25,
+    "Bills": 20,
+    "Medical": 15,
     "Others": 10,
   };
 
   final Map<String, double> weeklyData = {
-    "Food": 10,
-    "Transport": 5,
-    "Shopping": 8,
-    "Entertainment": 4,
+    "Grocery": 10,
+    "Leisure": 5,
+    "Bills": 8,
+    "Medical": 4,
     "Others": 3,
   };
 
@@ -43,111 +55,190 @@ class _HomepageScreenState extends State<HomepageScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Api().fetchBalance();
+    getBalance();
+    getCompletedTransaction();
+    getUpcomingTransaction();
+    // Call API when screen loads
+  }
+
+  Future<void> _refreshData() async {
+    await Future.delayed(Duration(seconds: 2)); // Simulating data fetch
+    await Api().fetchBalance();
+    getBalance();
+    getCompletedTransaction();
+
+    setState(() {}); // Ensure the UI updates after data is fetched
+  }
+
+  void getBalance() async {
+    var balanceData = await Api().fetchBalance();
+    if (balanceData != null && balanceData["user"] != null) {
+      setState(() {
+        username = balanceData["user"]["name"];
+        balance =
+            (balanceData["user"]["currentBalance"] as num)
+                .toDouble(); // Corrected interpolation
+      });
+    } else {
+      print("Error: balanceData or user data is null");
+    }
+  }
+
+  void getCompletedTransaction() async {
+    var balanceData = await Api().fetchBalance();
+
+    if (balanceData != null && balanceData["transactions"] != null) {
+      List<dynamic> allTransactions = balanceData["transactions"];
+
+      // Filtering only completed transactions
+      List<dynamic> completedTransactions =
+          allTransactions
+              .where((transaction) => transaction["status"] == "completed")
+              .toList();
+
+      setState(() {
+        transactionsList = completedTransactions;
+      });
+    } else {
+      print("Error: balanceData or transactions are null");
+    }
+  }
+
+  void getUpcomingTransaction() async {
+    var balanceData = await Api().fetchBalance();
+
+    if (balanceData != null && balanceData["transactions"] != null) {
+      List<dynamic> allTransactions = balanceData["transactions"];
+
+      // Filtering only completed transactions
+      List<dynamic> upcommingTransactions =
+          allTransactions
+              .where((transaction) => transaction["status"] == "upcomming")
+              .toList();
+      print(upcommingTransactions);
+      setState(() {
+        utransactionsList = upcommingTransactions;
+      });
+    } else {
+      print("Error: balanceData or transactions are null");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0),
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "Hi, ",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "Chinmoy",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(Icons.search),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(Icons.notifications),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                    vertical: 16,
-                  ),
-                  child: Column(
+      body: RefreshIndicator(
+        onRefresh: _refreshData, // Function to refresh data
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0),
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Current Balance",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Text(
-                                "₹15000",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
+                          Text(
+                            "Hi, $username",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          DropdownButton<String>(
-                            value: selectedOption,
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                selectedOption = newValue!;
-                              });
-                            },
-                            items:
-                                ["Month", "Week"].map<DropdownMenuItem<String>>(
-                                  (String value) {
+                          Text(
+                            "",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.search),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.notifications),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 16,
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Current Balance",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                Text(
+                                  "₹$balance",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            DropdownButton<String>(
+                              value: selectedOption,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedOption = newValue!;
+                                });
+                              },
+                              items:
+                                  [
+                                    "Month",
+                                    "Week",
+                                  ].map<DropdownMenuItem<String>>((
+                                    String value,
+                                  ) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Text(
@@ -155,233 +246,94 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                     );
-                                  },
-                                ).toList(),
+                                  }).toList(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        PieChart(
+                          dataMap: dataMap,
+                          chartType: ChartType.ring,
+                          baseChartColor: Colors.grey[300]!,
+                          colorList: colorList,
+                          chartRadius: MediaQuery.of(context).size.width / 2.5,
+                          ringStrokeWidth: 32,
+                          chartValuesOptions: ChartValuesOptions(
+                            showChartValuesInPercentage: true,
+                            showChartValues: true,
+                            showChartValuesOutside: true,
+                            decimalPlaces: 0,
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                UpcommingTransaction(),
+                const SizedBox(height: 10),
+
+                SingleChildScrollView(
+                  scrollDirection:
+                      Axis.horizontal, // Allows horizontal scrolling
+                  child: Row(
+                    children:
+                        utransactionsList.map((transaction) {
+                          return UpcomingTransactionCards(
+                            name: transaction["merchantName"] ?? "Unknown",
+                            date: transaction["date"] ?? "N/A",
+                            amount: transaction["amount"]?.toString() ?? "0",
+                          );
+                        }).toList(),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Recent Transaction",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
-                      const SizedBox(height: 20),
-                      PieChart(
-                        dataMap: dataMap,
-                        chartType: ChartType.ring,
-                        baseChartColor: Colors.grey[300]!,
-                        colorList: colorList,
-                        chartRadius: MediaQuery.of(context).size.width / 2.5,
-                        ringStrokeWidth: 32,
-                        chartValuesOptions: ChartValuesOptions(
-                          showChartValuesInPercentage: true,
-                          showChartValues: true,
-                          showChartValuesOutside: true,
-                          decimalPlaces: 0,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Get.to(() => AllRecentTransactionScreen());
+                      },
+                      child: Text(
+                        "See All",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w300,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Upcoming Transaction",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Get.to(() => AllUpcomingTransactionScreen());
-                    },
-                    child: Text(
-                      "See All",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w300,
-                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
+                  ],
+                ),
+                const SizedBox(height: 10),
 
-              SizedBox(
-                height: 100,
-                child: ListView.separated(
-                  itemCount: 5,
-                  scrollDirection: Axis.horizontal,
-                  separatorBuilder:
-                      (context, index) => const SizedBox(width: 16),
-                  itemBuilder: (context, index) {
-                    return UpcomingTransactionCards(
-                      company: "Netflix",
-                      price: "199",
-                      days: "2",
-                    );
-                  },
+                Column(
+                  children:
+                      transactionsList.map((transaction) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: TransactionCard(
+                            name: transaction["merchantName"] ?? "Unknown",
+                            date: transaction["date"] ?? "N/A",
+                            sign: transaction["type"] == "credit" ? "+" : "-",
+                            amount: transaction["amount"]?.toString() ?? "0",
+                            type: transaction["type"] ?? "debit",
+                          ),
+                        );
+                      }).toList(),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Recent Transaction",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Get.to(() => AllRecentTransactionScreen());
-                    },
-                    child: Text(
-                      "See All",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              TransactionCards(
-                name: "ganguly",
-                date: "21/05/2025",
-                sign: "+",
-                amount: "150",
-              ),
-              const SizedBox(height: 8),
-              TransactionCards(
-                name: "J.S Stall",
-                date: "21/05/2025",
-                sign: "-",
-                amount: "150",
-              ),
-              const SizedBox(height: 8),
-              TransactionCards(
-                name: "J.S Stall",
-                date: "21/05/2025",
-                sign: "-",
-                amount: "150",
-              ),
-              const SizedBox(height: 8),
-              TransactionCards(
-                name: "J.S Stall",
-                date: "21/05/2025",
-                sign: "+",
-                amount: "350",
-              ),
-            ],
+                const SizedBox(height: 8),
+              ],
+            ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class UpcomingTransactionCards extends StatelessWidget {
-  const UpcomingTransactionCards({
-    super.key,
-    required this.company,
-    required this.price,
-    required this.days,
-  });
-
-  final String company;
-  final String price;
-  final String days;
-
-  @override
-  Widget build(BuildContext context) {
-    return IntrinsicWidth(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(company, style: TextStyle(fontSize: 16)),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("₹", style: TextStyle(fontSize: 14)),
-                Text(price, style: TextStyle(fontSize: 14)),
-                Text("/month", style: TextStyle(fontSize: 14)),
-              ],
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(days, style: TextStyle(fontSize: 14)),
-                Text(" days left", style: TextStyle(fontSize: 14)),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class TransactionCards extends StatelessWidget {
-  const TransactionCards({
-    super.key,
-    required this.name,
-    required this.date,
-    required this.sign,
-    required this.amount,
-  });
-
-  final String name, date, sign, amount;
-
-  @override
-  Widget build(BuildContext context) {
-    final Color amountColor = sign == "+" ? Colors.green : Colors.red;
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                ),
-                Text(
-                  date,
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w200),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  sign,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: amountColor,
-                  ),
-                ),
-                Text(
-                  amount,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: amountColor,
-                  ),
-                ),
-              ],
-            ),
-          ],
         ),
       ),
     );
