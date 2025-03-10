@@ -29,7 +29,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
   String category = '';
   List<dynamic> transactionsList = [];
   List<dynamic> utransactionsList = [];
-  bool isLoading = true;
+
   Map<String, double> monthlyData = {};
 
   // final Map<String, double> monthlyData = {
@@ -67,31 +67,15 @@ class _HomepageScreenState extends State<HomepageScreen> {
   }
 
   Future<void> fetchData() async {
-    setState(() {
-      isLoading = true; // Start loading
-    });
-
     await Api().fetchBalance();
     getBalance();
     getCompletedTransaction();
     getUpcomingTransaction();
     getBudget();
-
-    setState(() {
-      isLoading = false; // Stop loading
-    });
   }
 
   Future<void> _refreshData() async {
-    setState(() {
-      isLoading = true;
-    });
-
     await fetchData(); // Reload data
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
   void getBalance() async {
@@ -109,65 +93,38 @@ class _HomepageScreenState extends State<HomepageScreen> {
   }
 
   void getBudget() async {
-    setState(() {
-      isLoading = true; // Show loader when API call starts
-    });
     var budgetData = await Api().budget();
 
     if (budgetData != null && budgetData['budgetPlan'] != null) {
-      var budget = budgetData['budgetPlan'];
+      try {
+        var budget = budgetData['budgetPlan'];
 
-      // Ensure correct type conversion and prevent empty data
-      Map<String, double> mappedData = {};
-      budget.forEach((key, value) {
-        if (value is num) {
-          // Ensure numeric values
-          mappedData[key.toString()] = value.toDouble();
-        }
-      });
+        // Ensure budget is a map and not a string
+        Map<String, dynamic> finalBudget =
+            (budget is String) ? jsonDecode(budget) : budget;
 
-      print("Mapped Data: $mappedData"); // Debugging
+        // Convert values to double
+        Map<String, double> dataMap = finalBudget.map(
+          (key, value) => MapEntry(key, (value as num).toDouble()),
+        );
 
-      if (mappedData.isNotEmpty) {
+        // Update state with valid data
         setState(() {
           monthlyData =
-              mappedData.isNotEmpty
-                  ? mappedData
+              dataMap.isNotEmpty
+                  ? dataMap
                   : {
-                    "Grocery": 0,
-                    "Leisure": 0,
-                    "Bills": 0,
-                    "Medical": 0,
-                    "Others": 0,
+                    "Grocery": 300.0,
+                    "Leisure": 200.0,
+                    "Bills": 200.0,
+                    "Medical": 100.0,
+                    "Others": 600.0,
                   };
-          isLoading = false; // Default values
         });
-      } else {
-        setState(() {
-          monthlyData = {
-            "Food": 0.0,
-            "Transport": 0.0,
-            "Entertainment": 0.0,
-            "Shopping": 0.0,
-            "Health": 0.0,
-            "Others": 0.0,
-          };
-          isLoading = false; // Hide loader
-        });
+      } catch (e) {
+        print("Error parsing budget data: $e");
       }
-    } else {
-      setState(() {
-        monthlyData = {
-          "Food": 0.0,
-          "Transport": 0.0,
-          "Entertainment": 0.0,
-          "Shopping": 0.0,
-          "Health": 0.0,
-          "Others": 0.0,
-        };
-        isLoading = false; // Hide loader
-      });
-    }
+    } else {}
   }
 
   void getCompletedTransaction() async {
@@ -213,341 +170,327 @@ class _HomepageScreenState extends State<HomepageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-          isLoading
-              ? Center(child: CircularProgressIndicator()) // Show loader
-              : RefreshIndicator(
-                onRefresh: _refreshData, // Function to refresh data
-                child: SingleChildScrollView(
+      body: RefreshIndicator(
+        onRefresh: _refreshData, // Function to refresh data
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0),
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "Hi, $username",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.search),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.notifications),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 30.0,
-                      left: 20.0,
-                      right: 20.0,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 16,
                     ),
                     child: Column(
                       children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 20.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    "Hi, $username",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Current Balance",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
                                   ),
-                                  Text(
-                                    "",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                Text(
+                                  "₹$balance",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
                                   ),
-                                ],
+                                ),
+                              ],
+                            ),
+                            DropdownButton<String>(
+                              value: selectedOption,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedOption = newValue!;
+                                });
+                              },
+                              items:
+                                  [
+                                    "Month",
+                                    "Week",
+                                  ].map<DropdownMenuItem<String>>((
+                                    String value,
+                                  ) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(
+                                        value,
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                    );
+                                  }).toList(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        dataMap.isEmpty
+                            ? Center(
+                              child: Text(
+                                "Loading...",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                              Row(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Icon(Icons.search),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Icon(Icons.notifications),
-                                    ),
-                                  ),
-                                ],
+                            )
+                            : PieChart(
+                              dataMap: dataMap,
+                              chartType: ChartType.ring,
+                              baseChartColor: Colors.grey[300]!,
+                              colorList: colorList,
+                              chartRadius:
+                                  MediaQuery.of(context).size.width / 2.5,
+                              ringStrokeWidth: 32,
+                              chartValuesOptions: ChartValuesOptions(
+                                showChartValues: true,
+                                showChartValuesOutside: true,
+                                decimalPlaces: 0,
+                              ),
+                            ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Get.to(() => PersonalAssistantScreen());
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(
+                              255,
+                              71,
+                              71,
+                              71,
+                            ).withOpacity(0.8),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 6,
+                                offset: Offset(2, 2),
                               ),
                             ],
                           ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20.0,
-                              vertical: 16,
-                            ),
+                            padding: const EdgeInsets.all(16.0),
                             child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Current Balance",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                        Text(
-                                          "₹$balance",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    DropdownButton<String>(
-                                      value: selectedOption,
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          selectedOption = newValue!;
-                                        });
-                                      },
-                                      items:
-                                          [
-                                            "Month",
-                                            "Week",
-                                          ].map<DropdownMenuItem<String>>((
-                                            String value,
-                                          ) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              child: Text(
-                                                value,
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                            );
-                                          }).toList(),
-                                    ),
-                                  ],
+                                Icon(
+                                  Icons.support_agent,
+                                  color: Colors.white,
+                                  size: 30,
                                 ),
-                                const SizedBox(height: 20),
-                                PieChart(
-                                  dataMap: dataMap,
-                                  chartType: ChartType.ring,
-                                  baseChartColor: Colors.grey[300]!,
-                                  colorList: colorList,
-                                  chartRadius:
-                                      MediaQuery.of(context).size.width / 2.5,
-                                  ringStrokeWidth: 32,
-                                  chartValuesOptions: ChartValuesOptions(
-                                    showChartValues: true,
-                                    showChartValuesOutside: true,
-                                    decimalPlaces: 0,
+                                const SizedBox(height: 8),
+                                Text(
+                                  "Consult Personalized\nAssistant",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  Get.to(() => PersonalAssistantScreen());
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 8.0,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                      255,
-                                      71,
-                                      71,
-                                      71,
-                                    ).withOpacity(0.8),
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        blurRadius: 6,
-                                        offset: Offset(2, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.support_agent,
-                                          color: Colors.white,
-                                          size: 30,
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          "Consult Personalized\nAssistant",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Get.to(() => PersonalAssistantScreen());
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(
+                              255,
+                              71,
+                              71,
+                              71,
+                            ).withOpacity(0.8),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 6,
+                                offset: Offset(2, 2),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.support_agent,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  "Consult Personalized\nAssistant",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  Get.to(() => PersonalAssistantScreen());
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 8.0,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                      255,
-                                      71,
-                                      71,
-                                      71,
-                                    ).withOpacity(0.8),
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        blurRadius: 6,
-                                        offset: Offset(2, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.support_agent,
-                                          color: Colors.white,
-                                          size: 30,
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          "Consult Personalized\nAssistant",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 20),
-                        UpcommingTransaction(),
-                        const SizedBox(height: 10),
-
-                        SingleChildScrollView(
-                          scrollDirection:
-                              Axis.horizontal, // Allows horizontal scrolling
-                          child: Row(
-                            children:
-                                utransactionsList.map((transaction) {
-                                  return UpcomingTransactionCards(
-                                    name:
-                                        transaction["merchantName"] ??
-                                        "Unknown",
-                                    date: transaction["time"] ?? "N/A",
-                                    amount:
-                                        transaction["amount"]?.toString() ??
-                                        "0",
-                                  );
-                                }).toList(),
                           ),
                         ),
-
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Recent Transaction",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Get.to(() => AllRecentTransactionScreen());
-                              },
-                              child: Text(
-                                "See All",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-
-                        Column(
-                          children:
-                              transactionsList.map((transaction) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 10.0),
-                                  child: TransactionCard(
-                                    name:
-                                        transaction["merchantName"] ??
-                                        "Unknown",
-                                    date: transaction["date"] ?? "N/A",
-                                    sign:
-                                        transaction["type"] == "credit"
-                                            ? "+"
-                                            : "-",
-                                    amount:
-                                        transaction["amount"]?.toString() ??
-                                        "0",
-                                    type: transaction["type"] ?? "debit",
-                                  ),
-                                );
-                              }).toList(),
-                        ),
-                        const SizedBox(height: 8),
-                      ],
+                      ),
                     ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+                UpcommingTransaction(),
+                const SizedBox(height: 10),
+
+                SingleChildScrollView(
+                  scrollDirection:
+                      Axis.horizontal, // Allows horizontal scrolling
+                  child: Row(
+                    children:
+                        utransactionsList.map((transaction) {
+                          return UpcomingTransactionCards(
+                            name: transaction["merchantName"] ?? "Unknown",
+                            date: transaction["time"] ?? "N/A",
+                            amount: transaction["amount"]?.toString() ?? "0",
+                          );
+                        }).toList(),
                   ),
                 ),
-              ),
+
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Recent Transaction",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Get.to(() => AllRecentTransactionScreen());
+                      },
+                      child: Text(
+                        "See All",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+
+                Column(
+                  children:
+                      transactionsList.map((transaction) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: TransactionCard(
+                            name: transaction["merchantName"] ?? "Unknown",
+                            date: transaction["date"] ?? "N/A",
+                            sign: transaction["type"] == "credit" ? "+" : "-",
+                            amount: transaction["amount"]?.toString() ?? "0",
+                            type: transaction["type"] ?? "debit",
+                          ),
+                        );
+                      }).toList(),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
