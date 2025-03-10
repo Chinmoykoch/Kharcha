@@ -2,19 +2,25 @@ import 'package:flutter/material.dart';
 
 class BudgetSummaryScreen extends StatelessWidget {
   final List<Map<String, dynamic>> budgetList;
-
+  final List<Map<String, dynamic>> responseData;
   const BudgetSummaryScreen({
     super.key,
     required this.budgetList,
-    required responseData,
+    required this.responseData,
   });
 
   @override
   Widget build(BuildContext context) {
+    List<Map<String, dynamic>> displayData =
+        (budgetList.isNotEmpty
+            ? budgetList
+            : List<Map<String, dynamic>>.from(responseData));
+    print("budgetList type: ${budgetList.runtimeType}");
+    print("responseData type: ${responseData.runtimeType}");
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Budget Summary",
+          "Expenses Summary",
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
         ),
         centerTitle: true,
@@ -43,11 +49,11 @@ class BudgetSummaryScreen extends StatelessWidget {
                     ),
                   ],
                   rows:
-                      budgetList
+                      displayData
                           .map(
                             (item) => DataRow(
                               cells: [
-                                DataCell(Text(item["category"])),
+                                DataCell(Text(item["category"].toString())),
                                 DataCell(
                                   Text("₹${item["amount"].toStringAsFixed(2)}"),
                                 ),
@@ -72,7 +78,7 @@ class BudgetSummaryScreen extends StatelessWidget {
                 Navigator.pop(context);
               },
               child: const Text(
-                "Submit Budget",
+                "Submit Expenses",
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
