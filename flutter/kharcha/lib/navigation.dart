@@ -41,7 +41,7 @@ class NavigationScreen extends StatelessWidget {
                       const SizedBox(width: 50),
                       FloatingActionButton(
                         onPressed: () {
-                          Get.to(() => AutoUploadScreen());
+                          // Get.to(() => AutoUploadScreen());
                         },
                         backgroundColor: Colors.white,
                         mini: true,

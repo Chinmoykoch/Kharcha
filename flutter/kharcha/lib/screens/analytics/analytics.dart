@@ -73,157 +73,159 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
               List<FlSpot> spots = expenseData[selectedView]!;
               List<FlSpot> peakSpots = getPeakPoints(spots);
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 16),
-                    Text(
-                      "Debit Expenses",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    SizedBox(
-                      height: 250, // Graph height reduced
-                      child: LineChart(
-                        LineChartData(
-                          gridData: FlGridData(show: false),
-                          titlesData: FlTitlesData(
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: true),
-                            ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  if (selectedView == "Week") {
-                                    return Text(
-                                      [
-                                        "Mon",
-                                        "Tue",
-                                        "Wed",
-                                        "Thu",
-                                        "Fri",
-                                        "Sat",
-                                        "Sun",
-                                      ].elementAt(value.toInt() - 1),
-                                    );
-                                  } else if (selectedView == "Month") {
-                                    return Text(value.toInt().toString());
-                                  } else {
-                                    return Text("M${value.toInt()}");
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
-                          borderData: FlBorderData(show: true),
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: spots,
-                              isCurved: true,
-                              color: Colors.blue,
-                              barWidth: 4,
-                              isStrokeCapRound: true,
-                              belowBarData: BarAreaData(
-                                show: true,
-                                color: Colors.blue.withOpacity(0.2),
-                              ),
-                              dotData: FlDotData(
-                                show: true,
-                                getDotPainter: (spot, _, __, ___) {
-                                  bool isPeak = peakSpots.contains(spot);
-                                  return FlDotCirclePainter(
-                                    radius: isPeak ? 6 : 4,
-                                    color: isPeak ? Colors.red : Colors.blue,
-                                    strokeWidth: 2,
-                                    strokeColor: Colors.white,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 16),
+                      Text(
+                        "Debit Expenses",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ),
-                    Text(
-                      "Credit Expenses",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    SizedBox(
-                      height: 250, // Graph height reduced
-                      child: LineChart(
-                        LineChartData(
-                          gridData: FlGridData(show: false),
-                          titlesData: FlTitlesData(
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: true),
+                      SizedBox(height: 16),
+                      SizedBox(
+                        height: 250, // Graph height reduced
+                        child: LineChart(
+                          LineChartData(
+                            gridData: FlGridData(show: false),
+                            titlesData: FlTitlesData(
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: true),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (value, meta) {
+                                    if (selectedView == "Week") {
+                                      return Text(
+                                        [
+                                          "Mon",
+                                          "Tue",
+                                          "Wed",
+                                          "Thu",
+                                          "Fri",
+                                          "Sat",
+                                          "Sun",
+                                        ].elementAt(value.toInt() - 1),
+                                      );
+                                    } else if (selectedView == "Month") {
+                                      return Text(value.toInt().toString());
+                                    } else {
+                                      return Text("M${value.toInt()}");
+                                    }
+                                  },
+                                ),
+                              ),
                             ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  if (selectedView == "Week") {
-                                    return Text(
-                                      [
-                                        "Mon",
-                                        "Tue",
-                                        "Wed",
-                                        "Thu",
-                                        "Fri",
-                                        "Sat",
-                                        "Sun",
-                                      ].elementAt(value.toInt() - 1),
+                            borderData: FlBorderData(show: true),
+                            lineBarsData: [
+                              LineChartBarData(
+                                spots: spots,
+                                isCurved: true,
+                                color: Colors.blue,
+                                barWidth: 4,
+                                isStrokeCapRound: true,
+                                belowBarData: BarAreaData(
+                                  show: true,
+                                  color: Colors.blue.withOpacity(0.2),
+                                ),
+                                dotData: FlDotData(
+                                  show: true,
+                                  getDotPainter: (spot, _, __, ___) {
+                                    bool isPeak = peakSpots.contains(spot);
+                                    return FlDotCirclePainter(
+                                      radius: isPeak ? 6 : 4,
+                                      color: isPeak ? Colors.red : Colors.blue,
+                                      strokeWidth: 2,
+                                      strokeColor: Colors.white,
                                     );
-                                  } else if (selectedView == "Month") {
-                                    return Text(value.toInt().toString());
-                                  } else {
-                                    return Text("M${value.toInt()}");
-                                  }
-                                },
+                                  },
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                          borderData: FlBorderData(show: true),
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: spots,
-                              isCurved: true,
-                              color: Colors.blue,
-                              barWidth: 4,
-                              isStrokeCapRound: true,
-                              belowBarData: BarAreaData(
-                                show: true,
-                                color: Colors.blue.withOpacity(0.2),
-                              ),
-                              dotData: FlDotData(
-                                show: true,
-                                getDotPainter: (spot, _, __, ___) {
-                                  bool isPeak = peakSpots.contains(spot);
-                                  return FlDotCirclePainter(
-                                    radius: isPeak ? 6 : 4,
-                                    color: isPeak ? Colors.red : Colors.blue,
-                                    strokeWidth: 2,
-                                    strokeColor: Colors.white,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
                         ),
                       ),
-                    ),
-                  ],
+                      Text(
+                        "Credit Expenses",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      SizedBox(
+                        height: 250, // Graph height reduced
+                        child: LineChart(
+                          LineChartData(
+                            gridData: FlGridData(show: false),
+                            titlesData: FlTitlesData(
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: true),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (value, meta) {
+                                    if (selectedView == "Week") {
+                                      return Text(
+                                        [
+                                          "Mon",
+                                          "Tue",
+                                          "Wed",
+                                          "Thu",
+                                          "Fri",
+                                          "Sat",
+                                          "Sun",
+                                        ].elementAt(value.toInt() - 1),
+                                      );
+                                    } else if (selectedView == "Month") {
+                                      return Text(value.toInt().toString());
+                                    } else {
+                                      return Text("M${value.toInt()}");
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                            borderData: FlBorderData(show: true),
+                            lineBarsData: [
+                              LineChartBarData(
+                                spots: spots,
+                                isCurved: true,
+                                color: Colors.blue,
+                                barWidth: 4,
+                                isStrokeCapRound: true,
+                                belowBarData: BarAreaData(
+                                  show: true,
+                                  color: Colors.blue.withOpacity(0.2),
+                                ),
+                                dotData: FlDotData(
+                                  show: true,
+                                  getDotPainter: (spot, _, __, ___) {
+                                    bool isPeak = peakSpots.contains(spot);
+                                    return FlDotCirclePainter(
+                                      radius: isPeak ? 6 : 4,
+                                      color: isPeak ? Colors.red : Colors.blue,
+                                      strokeWidth: 2,
+                                      strokeColor: Colors.white,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }).toList(),

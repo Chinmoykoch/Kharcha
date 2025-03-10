@@ -202,6 +202,7 @@ class _BudgetPlannerScreenState extends State<ManualUploadScreen> {
                               builder:
                                   (context) => BudgetSummaryScreen(
                                     budgetList: _budgetList,
+                                    responseData: null,
                                   ),
                             ),
                           );

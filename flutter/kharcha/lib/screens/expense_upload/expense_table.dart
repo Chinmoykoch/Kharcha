@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 class BudgetSummaryScreen extends StatelessWidget {
   final List<Map<String, dynamic>> budgetList;
 
-  const BudgetSummaryScreen({super.key, required this.budgetList});
+  const BudgetSummaryScreen({
+    super.key,
+    required this.budgetList,
+    required responseData,
+  });
 
   @override
   Widget build(BuildContext context) {
