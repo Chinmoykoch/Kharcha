@@ -15,11 +15,10 @@ class _ManualUploadScreenState extends State<ManualUploadScreen> {
   final TextEditingController _amountController = TextEditingController();
 
   final List<Map<String, dynamic>> categories = [
-    {'name': 'Food', 'icon': Icons.fastfood},
-    {'name': 'Shopping', 'icon': Icons.shopping_cart},
-    {'name': 'Transportation', 'icon': Icons.directions_car},
-    {'name': 'Housing', 'icon': Icons.home},
-    {'name': 'Medical', 'icon': Icons.local_hospital},
+    {'name': 'Grocery', 'icon': Icons.local_grocery_store_sharp},
+    {'name': 'Leisure', 'icon': Icons.free_breakfast},
+    {'name': 'Bills', 'icon': Icons.receipt},
+    {'name': 'Medical', 'icon': Icons.medical_information},
     {'name': 'Others', 'icon': Icons.more_horiz},
   ];
 

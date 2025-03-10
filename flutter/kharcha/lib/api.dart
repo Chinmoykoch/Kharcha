@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class Api {
   static const String _baseUrl =
-      'https://5f5b-2401-4900-1c3b-e7aa-f519-df53-1407-db3d.ngrok-free.app';
+      'https://8f77-2401-4900-3d39-799c-60da-111a-b997-8372.ngrok-free.app';
 
   // Signup method
   Future<Map<String, dynamic>> signup(
@@ -87,6 +87,30 @@ class Api {
       final bodyData = {"userId": myValue};
       final response = await http.post(
         Uri.parse("$_baseUrl/api/v1/auth/singleuser"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(bodyData),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data;
+      } else {
+        print("Failed to load balance: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching balance: $e");
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> budget() async {
+    String? myValue = GetStorage().read('userId');
+
+    try {
+      final bodyData = {"userId": myValue};
+      final response = await http.post(
+        Uri.parse("$_baseUrl/api/v1/budget/get"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(bodyData),
       );

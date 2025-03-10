@@ -67,8 +67,8 @@ class UpcomingTransactionCards extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  Text("Due ", style: TextStyle(fontSize: 14)),
                   Text(date, style: TextStyle(fontSize: 14)),
-                  Text(" days left", style: TextStyle(fontSize: 14)),
                 ],
               ),
             ],
