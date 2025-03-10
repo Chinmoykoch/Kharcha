@@ -103,12 +103,12 @@ class _AutoUploadScreenState extends State<AutoUploadScreen> {
         debugPrint("Backend Response: $jsonResponse");
 
         // Navigate to ResponseTableScreen with jsonResponse
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ExpenseTable(responseData: jsonResponse),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => BudgetSummaryScreen(responseData: jsonResponse),
+        //   ),
+        // );
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Backend response: ${jsonResponse}')),
