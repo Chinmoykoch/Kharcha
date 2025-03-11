@@ -26,13 +26,13 @@ class _ReportsScreenState extends State<ReportsScreen> {
           child: Column(
             children: [
               const MonthlyStatistics(),
-              const SizedBox(height: 30),
-              BudgetPlanner(
-                percentage: percentage,
-                remaining: remaining,
-                budget: budget,
-                expenses: expenses,
-              ),
+              // const SizedBox(height: 30),
+              // BudgetPlanner(
+              //   percentage: percentage,
+              //   remaining: remaining,
+              //   budget: budget,
+              //   expenses: expenses,
+              // ),
             ],
           ),
         ),
@@ -52,11 +52,9 @@ class _MonthlyStatisticsState extends State<MonthlyStatistics> {
   String selectedMonth = "January"; // Default month
 
   final Map<String, Map<String, double>> monthlyData = {
-    "January": {"Income": 5000, "Expense": 3000, "Balance": 2000},
-    "February": {"Income": 6000, "Expense": 4000, "Balance": 2000},
-    "March": {"Income": 7000, "Expense": 5000, "Balance": 2000},
-    "April": {"Income": 8000, "Expense": 6000, "Balance": 2000},
-    "May": {"Income": 9000, "Expense": 7000, "Balance": 2000},
+    "January": {"Income": 0, "Expense": 0, "Savings": 2000},
+    "February": {"Income": 20000, "Expense": 16000, "Savings": 4000},
+    "March": {"Income": 25000, "Expense": 10000, "Balance": 15000},
   };
 
   @override
@@ -186,110 +184,110 @@ class _MonthlyStatisticsState extends State<MonthlyStatistics> {
   }
 }
 
-class BudgetPlanner extends StatelessWidget {
-  const BudgetPlanner({
-    super.key,
-    required this.percentage,
-    required this.remaining,
-    required this.budget,
-    required this.expenses,
-  });
+// class BudgetPlanner extends StatelessWidget {
+//   const BudgetPlanner({
+//     super.key,
+//     required this.percentage,
+//     required this.remaining,
+//     required this.budget,
+//     required this.expenses,
+//   });
 
-  final double percentage;
-  final double remaining;
-  final double budget;
-  final double expenses;
+//   final double percentage;
+//   final double remaining;
+//   final double budget;
+//   final double expenses;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(width: 0.6, color: Colors.grey),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Monthly Budget Planner",
-                style: TextStyle(
-                  color: Colors.yellow,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Get.to(() => BudgetPlannerScreen());
-                },
-                child: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 20,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            crossAxisAlignment:
-                CrossAxisAlignment.center, // Align items properly
-            children: [
-              CircularPercentIndicator(
-                radius: 50.0,
-                lineWidth: 8.0,
-                percent: percentage,
-                center: Text(
-                  "${(percentage * 100).toInt()}%",
-                  style: TextStyle(color: Colors.white, fontSize: 14),
-                ),
-                progressColor: percentage == 0 ? Colors.red : Colors.yellow,
-                backgroundColor: Colors.grey.shade800,
-                circularStrokeCap: CircularStrokeCap.round,
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                // Ensures column takes available space
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildStatRow(
-                      "Remaining:",
-                      remaining,
-                      remaining > 0 ? Colors.white : Colors.red,
-                    ),
-                    Divider(),
-                    _buildStatRow("Budget:", totalAmonut, Colors.white),
-                    const SizedBox(height: 10),
-                    _buildStatRow("Expenses:", expenses, Colors.white),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       decoration: BoxDecoration(
+//         border: Border.all(width: 0.6, color: Colors.grey),
+//         borderRadius: BorderRadius.circular(10),
+//       ),
+//       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               Text(
+//                 "Monthly Budget Planner",
+//                 style: TextStyle(
+//                   color: Colors.yellow,
+//                   fontWeight: FontWeight.bold,
+//                   fontSize: 18,
+//                 ),
+//               ),
+//               GestureDetector(
+//                 onTap: () {
+//                   Get.to(() => BudgetPlannerScreen());
+//                 },
+//                 child: Icon(
+//                   Icons.arrow_forward_ios,
+//                   size: 20,
+//                   color: Colors.white,
+//                 ),
+//               ),
+//             ],
+//           ),
+//           const SizedBox(height: 20),
+//           Row(
+//             crossAxisAlignment:
+//                 CrossAxisAlignment.center, // Align items properly
+//             children: [
+//               CircularPercentIndicator(
+//                 radius: 50.0,
+//                 lineWidth: 8.0,
+//                 percent: percentage,
+//                 center: Text(
+//                   "${(percentage * 100).toInt()}%",
+//                   style: TextStyle(color: Colors.white, fontSize: 14),
+//                 ),
+//                 progressColor: percentage == 0 ? Colors.red : Colors.yellow,
+//                 backgroundColor: Colors.grey.shade800,
+//                 circularStrokeCap: CircularStrokeCap.round,
+//               ),
+//               const SizedBox(width: 20),
+//               Expanded(
+//                 // Ensures column takes available space
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     _buildStatRow(
+//                       "Remaining:",
+//                       remaining,
+//                       remaining > 0 ? Colors.white : Colors.red,
+//                     ),
+//                     Divider(),
+//                     _buildStatRow("Budget:", totalAmonut, Colors.white),
+//                     const SizedBox(height: 10),
+//                     _buildStatRow("Expenses:", expenses, Colors.white),
+//                   ],
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
-// Helper function to create rows with flexible spacing
-Widget _buildStatRow(String label, double value, Color valueColor) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text(label, style: TextStyle(color: Colors.white, fontSize: 16)),
-      Flexible(
-        child: Text(
-          "${value.toStringAsFixed(2)}",
-          style: TextStyle(color: valueColor, fontSize: 16),
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    ],
-  );
-}
+// // Helper function to create rows with flexible spacing
+// Widget _buildStatRow(String label, double value, Color valueColor) {
+//   return Row(
+//     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//     children: [
+//       Text(label, style: TextStyle(color: Colors.white, fontSize: 16)),
+//       Flexible(
+//         child: Text(
+//           "${value.toStringAsFixed(2)}",
+//           style: TextStyle(color: valueColor, fontSize: 16),
+//           overflow: TextOverflow.ellipsis,
+//         ),
+//       ),
+//     ],
+//   );
+// }

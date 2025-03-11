@@ -6,7 +6,7 @@ import 'package:kharcha/screens/analytics/analytics.dart';
 import 'package:kharcha/screens/expense_upload/auto_upload.dart';
 import 'package:kharcha/screens/expense_upload/manual_upload.dart';
 import 'package:kharcha/screens/home/homepage.dart';
-import 'package:kharcha/screens/profile.dart';
+import 'package:kharcha/screens/profile/profile.dart';
 import 'package:kharcha/screens/reports/reports.dart';
 
 class NavigationScreen extends StatelessWidget {
@@ -84,8 +84,8 @@ class NavigationScreen extends StatelessWidget {
                   onTap: () => controller.selectedIndex.value = 0,
                 ),
                 NavItem(
-                  icon: FontAwesomeIcons.chartColumn,
-                  label: 'Analytics',
+                  icon: FontAwesomeIcons.trophy,
+                  label: 'LeaderBoard',
                   isSelected: controller.selectedIndex.value == 1,
                   onTap: () => controller.selectedIndex.value = 1,
                 ),
@@ -118,7 +118,7 @@ class NavigationController extends GetxController {
 
   final screens = [
     HomepageScreen(),
-    AnalyticsScreen(),
+    LeaderboardScreen(),
     ReportsScreen(),
     const ProfileScreen(),
   ];

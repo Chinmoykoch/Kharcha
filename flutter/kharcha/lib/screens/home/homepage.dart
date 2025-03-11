@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:kharcha/api.dart';
 import 'package:kharcha/screens/home/widgets/all_recent_transaction.dart';
-import 'package:kharcha/screens/home/widgets/all_upcoming_transaction.dart';
-import 'package:kharcha/screens/home/widgets/personal_assistant.dart';
+import 'package:kharcha/screens/home/widgets/quiz.dart';
 import 'package:kharcha/screens/home/widgets/transactioncards.dart';
 import 'package:kharcha/screens/home/widgets/upcomingtransaction.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:get_storage/get_storage.dart';
 
 class HomepageScreen extends StatefulWidget {
   HomepageScreen({super.key});
@@ -64,6 +62,29 @@ class _HomepageScreenState extends State<HomepageScreen> {
   void initState() {
     super.initState();
     fetchData(); // Load data initially
+    _quizes = 0;
+    score = _storage.read("score") ?? 0;
+    hasPlayedQuiz = _storage.read("hasPlayedQuiz") ?? false;
+  }
+
+  late int _quizes;
+  final int _maxQuizes = 1;
+  final GetStorage _storage = GetStorage();
+  late int score;
+  bool hasPlayedQuiz = false;
+
+  void _startQuiz() {
+    if (hasPlayedQuiz) {
+      // Prevent playing quiz more than once while logged in
+      return;
+    }
+
+    Get.to(() => QuizScreen())?.then((value) {
+      setState(() {
+        hasPlayedQuiz = true;
+        _storage.write("hasPlayedQuiz", true);
+      });
+    });
   }
 
   Future<void> fetchData() async {
@@ -171,7 +192,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: _refreshData, // Function to refresh data
+        onRefresh: _refreshData,
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0),
@@ -200,31 +221,31 @@ class _HomepageScreenState extends State<HomepageScreen> {
                           ),
                         ],
                       ),
-                      Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Icon(Icons.search),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Icon(Icons.notifications),
-                            ),
-                          ),
-                        ],
-                      ),
+                      // Row(
+                      //   children: [
+                      //     Container(
+                      //       decoration: BoxDecoration(
+                      //         color: Colors.grey,
+                      //         borderRadius: BorderRadius.circular(30),
+                      //       ),
+                      //       child: Padding(
+                      //         padding: const EdgeInsets.all(8.0),
+                      //         child: Icon(Icons.search),
+                      //       ),
+                      //     ),
+                      //     const SizedBox(width: 10),
+                      //     Container(
+                      //       decoration: BoxDecoration(
+                      //         color: Colors.grey,
+                      //         borderRadius: BorderRadius.circular(30),
+                      //       ),
+                      //       child: Padding(
+                      //         padding: const EdgeInsets.all(8.0),
+                      //         child: Icon(Icons.notifications),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                     ],
                   ),
                 ),
@@ -326,7 +347,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          Get.to(() => PersonalAssistantScreen());
+                          // Get.to(() => QuizScreen());
                         },
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -374,18 +395,20 @@ class _HomepageScreenState extends State<HomepageScreen> {
                     ),
                     Expanded(
                       child: GestureDetector(
-                        onTap: () {
-                          Get.to(() => PersonalAssistantScreen());
-                        },
+                        onTap: hasPlayedQuiz ? null : _startQuiz,
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 8.0),
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(
-                              255,
-                              71,
-                              71,
-                              71,
-                            ).withOpacity(0.8),
+                            color:
+                                hasPlayedQuiz
+                                    ? Colors
+                                        .grey // Disabled state
+                                    : const Color.fromARGB(
+                                      255,
+                                      71,
+                                      71,
+                                      71,
+                                    ).withOpacity(0.8),
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
@@ -407,7 +430,9 @@ class _HomepageScreenState extends State<HomepageScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  "Consult Personalized\nAssistant",
+                                  hasPlayedQuiz
+                                      ? "You've already played the quiz"
+                                      : "Know about your financial\nstatus",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 14,
@@ -429,9 +454,11 @@ class _HomepageScreenState extends State<HomepageScreen> {
                 const SizedBox(height: 10),
 
                 SingleChildScrollView(
-                  scrollDirection:
-                      Axis.horizontal, // Allows horizontal scrolling
+                  scrollDirection: Axis.horizontal,
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children:
                         utransactionsList.map((transaction) {
                           return UpcomingTransactionCards(
@@ -454,18 +481,18 @@ class _HomepageScreenState extends State<HomepageScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        Get.to(() => AllRecentTransactionScreen());
-                      },
-                      child: Text(
-                        "See All",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     Get.to(() => TransactionListScreen());
+                    //   },
+                    //   child: Text(
+                    //     "See All",
+                    //     style: TextStyle(
+                    //       fontSize: 12,
+                    //       fontWeight: FontWeight.w300,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
                 const SizedBox(height: 10),

@@ -67,7 +67,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1565C0),
       body: Center(
         child: SingleChildScrollView(
           // Prevents overflow issues
@@ -86,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  "Your safe space to heal and grow",
+                  "Sign in to take control of your finances",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16, color: Colors.white70),
                 ),
@@ -94,10 +93,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   controller: phoneController,
                   keyboardType: TextInputType.phone,
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ), // Text color set to black
                   decoration: InputDecoration(
                     hintText: "Phone Number",
+                    hintStyle: TextStyle(
+                      color: Colors.black87,
+                    ), // Hint text color
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: const Color.fromRGBO(
+                      255,
+                      255,
+                      255,
+                      1,
+                    ), // Background color changed to white for visibility
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide.none,
@@ -108,10 +118,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   controller: passwordController,
                   obscureText: true,
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ), // Text color set to black
                   decoration: InputDecoration(
                     hintText: "Password",
+                    hintStyle: TextStyle(
+                      color: Colors.black87,
+                    ), // Hint text color
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor:
+                        Colors
+                            .white, // Background color changed to white for visibility
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide.none,

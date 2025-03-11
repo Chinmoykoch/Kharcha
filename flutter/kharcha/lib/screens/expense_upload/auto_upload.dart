@@ -89,7 +89,7 @@ class _AutoUploadScreenState extends State<AutoUploadScreen> {
 
   Future<void> _sendImageToBackend(String imageUrl) async {
     const String backendUrl =
-        "https://8f77-2401-4900-3d39-799c-60da-111a-b997-8372.ngrok-free.app/api/v1/transaction/addrecipt";
+        "https://aa2d-2401-4900-b233-442e-1c68-d42b-f0d9-5141.ngrok-free.app/api/v1/transaction/addrecipt";
 
     try {
       var response = await http.post(

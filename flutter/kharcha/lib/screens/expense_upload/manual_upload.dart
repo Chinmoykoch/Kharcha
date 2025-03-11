@@ -180,7 +180,7 @@ class _BudgetPlannerScreenState extends State<ManualUploadScreen> {
                     // Submit button
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: Colors.yellowAccent,
                         minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -211,7 +211,7 @@ class _BudgetPlannerScreenState extends State<ManualUploadScreen> {
 
                       child: const Text(
                         "Submit",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                        style: TextStyle(color: Colors.black, fontSize: 16),
                       ),
                     ),
                   ],
@@ -229,7 +229,7 @@ class _BudgetPlannerScreenState extends State<ManualUploadScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Budget Planner",
+          "Add Expenses",
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
         ),
         centerTitle: true,
@@ -253,7 +253,7 @@ class _BudgetPlannerScreenState extends State<ManualUploadScreen> {
                   Icon(Icons.add, color: Colors.black),
                   SizedBox(width: 10),
                   Text(
-                    "Add Budget Plan",
+                    "Add Expenses",
                     style: TextStyle(color: Colors.black, fontSize: 16),
                   ),
                 ],
@@ -311,7 +311,7 @@ class _BudgetPlannerScreenState extends State<ManualUploadScreen> {
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blueAccent,
+                color: Colors.yellowAccent,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -322,7 +322,7 @@ class _BudgetPlannerScreenState extends State<ManualUploadScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   Text(
@@ -330,7 +330,7 @@ class _BudgetPlannerScreenState extends State<ManualUploadScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                 ],

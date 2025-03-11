@@ -14,15 +14,15 @@ class UpcommingTransaction extends StatelessWidget {
           "Upcoming Transaction",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
-        GestureDetector(
-          onTap: () {
-            Get.to(() => AllUpcomingTransactionScreen());
-          },
-          child: Text(
-            "See All",
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
-          ),
-        ),
+        // GestureDetector(
+        //   onTap: () {
+        //     Get.to(() => AllUpcomingTransactionScreen());
+        //   },
+        //   child: Text(
+        //     "See All",
+        //     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+        //   ),
+        // ),
       ],
     );
   }

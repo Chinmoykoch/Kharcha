@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class Api {
   static const String _baseUrl =
-      'https://8f77-2401-4900-3d39-799c-60da-111a-b997-8372.ngrok-free.app';
+      'https://aa2d-2401-4900-b233-442e-1c68-d42b-f0d9-5141.ngrok-free.app';
 
   // Signup method
   Future<Map<String, dynamic>> signup(
