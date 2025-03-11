@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kharcha/screens/reports/widgets/budget_planner.dart';
+import 'package:kharcha/screens/reports/widgets/smart_budgeting.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class ReportsScreen extends StatefulWidget {
@@ -204,13 +205,24 @@ class _MonthlyStatisticsState extends State<MonthlyStatistics> {
               ),
               child: Column(
                 children: [
-                  Text(
-                    "Smart Budgeting",
-                    style: TextStyle(
-                      color: Colors.yellow,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Smart Budgeting",
+                        style: TextStyle(
+                          color: Colors.yellow,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(() => SmartBudgeting());
+                        },
+                        child: Icon(Icons.arrow_forward_ios, size: 30),
+                      ),
+                    ],
                   ),
                 ],
               ),
