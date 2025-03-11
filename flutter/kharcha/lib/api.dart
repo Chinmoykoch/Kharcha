@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:kharcha/constants.dart';
 
 class Api {
   static const String _baseUrl =
@@ -155,7 +156,7 @@ class Api {
   // Post receipt
   Future<Map<String, dynamic>> postReceipt(String Receipt) async {
     try {
-      final url = Uri.parse('$_baseUrl/api/v1/receipt/upload');
+      final url = Uri.parse('$_baseUrl/api/v1/');
 
       final response = await http.post(
         url,
@@ -174,6 +175,34 @@ class Api {
     } catch (e) {
       debugPrint('Receipt Upload Error: $e');
       return {"error": "Error uploading receipt: $e"};
+    }
+  }
+
+  Future<Map<String, dynamic>> startChat() async {
+    final url = Uri.parse('$_baseUrl/api/v1/');
+    final response = await http.post(
+      url,
+      body: {'userId': AppConstants.userId ?? ""},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to start chat: ${response.statusCode}');
+    }
+  }
+
+  Future<Map<String, dynamic>> sendAnswer(
+    String sessionId,
+    String answer,
+  ) async {
+    final url = Uri.parse('$_baseUrl/api/mood/answer/$sessionId?isQuiz=false');
+    final response = await http.post(url, body: {'answer': answer});
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to send answer: ${response.statusCode}');
     }
   }
 }

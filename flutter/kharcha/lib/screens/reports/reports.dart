@@ -62,123 +62,161 @@ class _MonthlyStatisticsState extends State<MonthlyStatistics> {
     final data =
         monthlyData[selectedMonth] ?? {"Income": 0, "Expense": 0, "Balance": 0};
 
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(width: 0.6, color: Colors.grey),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Monthly Statistics",
-                  style: TextStyle(
-                    color: Colors.yellow,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(width: 0.6, color: Colors.grey),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 16,
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Monthly Statistics",
+                        style: TextStyle(
+                          color: Colors.yellow,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      DropdownButton<String>(
+                        value: selectedMonth,
+                        dropdownColor: Colors.grey[900], // Dark dropdown
+                        style: const TextStyle(color: Colors.white),
+                        icon: const Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.white,
+                        ),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedMonth = newValue!;
+                          });
+                        },
+                        items:
+                            monthlyData.keys.map<DropdownMenuItem<String>>((
+                              String month,
+                            ) {
+                              return DropdownMenuItem<String>(
+                                value: month,
+                                child: Text(
+                                  month,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }).toList(),
+                      ),
+                    ],
                   ),
-                ),
-                DropdownButton<String>(
-                  value: selectedMonth,
-                  dropdownColor: Colors.grey[900], // Dark dropdown
-                  style: const TextStyle(color: Colors.white),
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedMonth = newValue!;
-                    });
-                  },
-                  items:
-                      monthlyData.keys.map<DropdownMenuItem<String>>((
-                        String month,
-                      ) {
-                        return DropdownMenuItem<String>(
-                          value: month,
-                          child: Text(
-                            month,
-                            style: const TextStyle(color: Colors.white),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        selectedMonth.substring(0, 3),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            "Income",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
                           ),
-                        );
-                      }).toList(),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  selectedMonth.substring(0, 3),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                          const SizedBox(height: 10),
+                          Text(
+                            "${data["Income"]}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            "Expense",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            "${data["Expense"]}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            "Balance",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            "${data["Balance"]}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-                Column(
-                  children: [
-                    const Text(
-                      "Income",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      "${data["Income"]}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    const Text(
-                      "Expense",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      "${data["Expense"]}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    const Text(
-                      "Balance",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      "${data["Balance"]}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+
+          const SizedBox(height: 30),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(width: 0.6, color: Colors.grey),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 16,
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    "Smart Budgeting",
+                    style: TextStyle(
+                      color: Colors.yellow,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
